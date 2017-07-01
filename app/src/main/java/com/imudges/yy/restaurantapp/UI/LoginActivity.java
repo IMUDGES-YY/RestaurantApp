@@ -1,5 +1,6 @@
 package com.imudges.yy.restaurantapp.UI;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -34,6 +35,9 @@ public class LoginActivity extends BaseActivity {
     @ViewInject(R.id.btn_login)
     private Button btnLogin;
 
+    /**
+     * 登陆逻辑
+     * */
     @Event(value=R.id.btn_login,
             type = View.OnClickListener.class)
     private void onLoginClick(View view){
@@ -86,6 +90,12 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
+    @Event(value = R.id.btn_sign_in,
+            type = View.OnClickListener.class)
+    private void onSignInClick(View view){
+        Intent intent = new Intent(LoginActivity.this,SignInActivity.class);
+        startActivity(intent);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

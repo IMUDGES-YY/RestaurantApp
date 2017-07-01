@@ -42,7 +42,7 @@
                 android:hint="密码"
                 android:inputType="textPassword"
                 android:imeOptions="actionDone"
-                android:text="18847163389"
+                android:text="123"
         />
     </LinearLayout>
     <Button

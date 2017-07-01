@@ -27,7 +27,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingBottom="10dp">
+            android:layout_marginTop="10px"
+            >
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -43,29 +44,11 @@
                 android:imeOptions="actionDone"
         />
     </LinearLayout>
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="10dp">
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/password"
-        />
-        <EditText
-                android:id="@+id/et_sign_confirm_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="再次输入密码"
-                android:inputType="textPassword"
-                android:imeOptions="actionDone"
-        />
-    </LinearLayout>
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:orientation="horizontal">
+                  android:orientation="horizontal"
+                  android:layout_marginTop="10px"
+    >
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -93,7 +76,7 @@
     </LinearLayout>
     <Button
             android:layout_marginTop="10px"
-            android:id="@+id/btn_login"
+            android:id="@+id/btn_commit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="提交"
