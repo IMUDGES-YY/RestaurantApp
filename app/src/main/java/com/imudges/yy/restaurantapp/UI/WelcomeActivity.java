@@ -23,12 +23,22 @@ import com.github.yoojia.anyversion.AnyVersion;
 import com.github.yoojia.anyversion.Callback;
 import com.github.yoojia.anyversion.NotifyStyle;
 import com.github.yoojia.anyversion.Version;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.imudges.yy.restaurantapp.Bean.User;
 import com.imudges.yy.restaurantapp.R;
+import com.imudges.yy.restaurantapp.Tool.Config;
+import com.imudges.yy.restaurantapp.Tool.SharePreferenceManager;
 import com.imudges.yy.restaurantapp.UI.view.CommonProgressDialog;
 import com.yanzhenjie.alertdialog.AlertDialog;
 import com.yanzhenjie.permission.*;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.xutils.http.RequestParams;
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.ViewInject;
+import org.xutils.x;
 
 
 import java.io.*;
@@ -44,6 +54,7 @@ public class WelcomeActivity extends BaseActivity {
     private Version version;
     private CommonProgressDialog pBar;
     private boolean stopJumpFlag = false;
+    private boolean isLoginFlag = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,8 +65,49 @@ public class WelcomeActivity extends BaseActivity {
         View rootView = LayoutInflater.from(this).inflate(R.layout.activity_welcome,null);
         setContentView(rootView);
 
-//        handler.sendEmptyMessageDelayed(0,2000);
 
+        String ak = SharePreferenceManager.readString(WelcomeActivity.this,"restaurant_ak");
+        //判断用户状态
+        final JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("ak",ak);
+            RequestParams requestParams = new RequestParams(Config.BASE_URL + "check_login_status");
+            requestParams.setAsJsonContent(true);
+            requestParams.setBodyContent(jsonObject.toString());
+            x.http().post(requestParams, new org.xutils.common.Callback.CommonCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    JsonObject jsonObject1 = new JsonParser().parse(result).getAsJsonObject();
+                    Gson gson = new Gson();
+                    int ret = jsonObject1.get("ret").getAsInt();
+                    if(ret == 0){
+                        User user = gson.fromJson(jsonObject1.get("data").getAsJsonObject(),User.class);
+                        SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_ak",user.getAk());
+                        SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_username",user.getUsername());
+                        isLoginFlag = true;
+                    } else if(ret == -1){
+                        isLoginFlag = false;
+                    }
+                }
+
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+
+                }
+
+                @Override
+                public void onCancelled(CancelledException cex) {
+
+                }
+
+                @Override
+                public void onFinished() {
+
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         Animation animation = AnimationUtils.loadAnimation(this,R.anim.alpha);
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -70,8 +122,12 @@ public class WelcomeActivity extends BaseActivity {
                     @Override
                     public void run() {
                         if (!stopJumpFlag){
-                            goLogin();
-
+                            if(isLoginFlag ){
+                                //TODO question
+                                goLogin();
+                            } else {
+                                goLogin();
+                            }
                         }else {
                             String note = "";
                             int forced = 0;
@@ -93,7 +149,6 @@ public class WelcomeActivity extends BaseActivity {
 
             }
         });
-//        handler.sendEmptyMessageDelayed(0, 3000);
         rootView.startAnimation(animation);
 
         AnyVersion version = AnyVersion.getInstance();

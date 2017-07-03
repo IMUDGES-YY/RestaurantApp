@@ -36,6 +36,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".UI.LoginActivity">
+        </activity>
+
     </application>
 
 </manifest>

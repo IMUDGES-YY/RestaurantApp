@@ -11,7 +11,7 @@ import com.imudges.yy.restaurantapp.R;
 /**
  * Created by yangyang on 2017/7/3.
  */
-public class MainFragment extends Fragment{
+public class MainFragment extends BaseFragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
