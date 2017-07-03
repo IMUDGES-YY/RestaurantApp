@@ -11,12 +11,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ViewUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
+import com.github.yoojia.anyversion.AnyVersion;
+import com.github.yoojia.anyversion.Callback;
+import com.github.yoojia.anyversion.NotifyStyle;
 import com.github.yoojia.anyversion.Version;
 import com.imudges.yy.restaurantapp.R;
 import com.imudges.yy.restaurantapp.UI.view.CommonProgressDialog;
@@ -46,20 +51,62 @@ public class WelcomeActivity extends BaseActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         /**标题是属于View的，所以窗口所有的修饰部分被隐藏后标题依然有效,需要去掉标题**/
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_welcome);
-        handler.sendEmptyMessageDelayed(0,2000);
-    }
+        View rootView = LayoutInflater.from(this).inflate(R.layout.activity_welcome,null);
+        setContentView(rootView);
 
-    private void checkVersion(){
-        String note = "";
-        int forced = 0;
-        try{
-            note = version.note.split("&&")[0];
-            forced = Integer.parseInt(version.note.split("&&")[1]);
-        }catch (Exception e){
-            note = version.note;
-        }
-        WelcomeActivity.this.showDialog(version.code,version.name,note,version.URL.toString(),forced);
+//        handler.sendEmptyMessageDelayed(0,2000);
+
+
+        Animation animation = AnimationUtils.loadAnimation(this,R.anim.alpha);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!stopJumpFlag){
+                            goLogin();
+
+                        }else {
+                            String note = "";
+                            int forced = 0;
+                            try{
+                                note = version.note.split("&&")[0];
+                                forced = Integer.parseInt(version.note.split("&&")[1]);
+                            }catch (Exception e){
+                                note = version.note;
+                            }
+                            WelcomeActivity.this.showDialog(version.code, version.name, note, version.URL.toString(), forced);
+
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+//        handler.sendEmptyMessageDelayed(0, 3000);
+        rootView.startAnimation(animation);
+
+        AnyVersion version = AnyVersion.getInstance();
+        version.setCallback(new Callback() {
+            @Override
+            public void onVersion(Version version) {
+                stopJumpFlag = true;
+                WelcomeActivity.this.version = version;
+                Log.d("AnyVersion","New Version: \n" + version);
+            }
+        });
+        version.check(NotifyStyle.Callback);
+
     }
 
     //TODO
@@ -335,7 +382,7 @@ public class WelcomeActivity extends BaseActivity {
         /**
          * 转给AndPermission分析结果。
          *
-         * @param object     要接受结果的Activity、Fragment。
+         * @param object     要接受结果的Activity、MainFragment。
          * @param requestCode  请求码。
          * @param permissions  权限数组，一个或者多个。
          * @param grantResults 请求结果。

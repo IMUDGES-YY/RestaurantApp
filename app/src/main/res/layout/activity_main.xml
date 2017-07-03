@@ -8,7 +8,21 @@
         android:orientation="vertical"
         tools:context="com.imudges.yy.restaurantapp.UI.MainActivity">
 
-    <ListView
+    <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_width="match_parent"
+    >
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="餐馆端"
+        />
+    </android.support.v7.widget.Toolbar>
+
+    <FrameLayout
+            android:id="@+id/id_content"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
