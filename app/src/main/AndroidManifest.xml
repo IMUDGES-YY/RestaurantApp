@@ -39,6 +39,9 @@
         <activity android:name=".UI.LoginActivity">
         </activity>
 
+        <activity android:name=".UI.SignInActivity">
+        </activity>
+
     </application>
 
 </manifest>

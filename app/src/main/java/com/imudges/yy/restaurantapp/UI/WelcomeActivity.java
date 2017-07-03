@@ -55,10 +55,12 @@ public class WelcomeActivity extends BaseActivity {
     private CommonProgressDialog pBar;
     private boolean stopJumpFlag = false;
     private boolean isLoginFlag = false;
+    private User mUser = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         /**标题是属于View的，所以窗口所有的修饰部分被隐藏后标题依然有效,需要去掉标题**/
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -82,8 +84,9 @@ public class WelcomeActivity extends BaseActivity {
                     int ret = jsonObject1.get("ret").getAsInt();
                     if(ret == 0){
                         User user = gson.fromJson(jsonObject1.get("data").getAsJsonObject(),User.class);
-                        SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_ak",user.getAk());
-                        SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_username",user.getUsername());
+//                        SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_ak",user.getAk());
+//                        SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_username",user.getUsername());
+                        mUser = user;
                         isLoginFlag = true;
                     } else if(ret == -1){
                         isLoginFlag = false;
@@ -220,6 +223,14 @@ public class WelcomeActivity extends BaseActivity {
 
     private void goLogin(){
         Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
+        if(mUser != null){
+            intent.putExtra("ak",mUser.getAk());
+            intent.putExtra("username",mUser.getUsername());
+            intent.putExtra("phone",mUser.getPhone());
+            intent.putExtra("isLogin",true);
+        } else {
+            intent.putExtra("isLogin",false);
+        }
         startActivity(intent);
         finish();
     }

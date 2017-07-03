@@ -5,13 +5,18 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.imudges.yy.restaurantapp.Bean.User;
 import com.imudges.yy.restaurantapp.R;
 import com.imudges.yy.restaurantapp.Tool.MyParamsBuilder;
+import com.imudges.yy.restaurantapp.Tool.SharePreferenceManager;
 import com.imudges.yy.restaurantapp.Tool.Toasty;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -32,6 +37,8 @@ public class LoginActivity extends BaseActivity {
     @ViewInject(R.id.et_password)
     private EditText etPassword;
 
+
+
     @ViewInject(R.id.btn_login)
     private Button btnLogin;
 
@@ -47,7 +54,7 @@ public class LoginActivity extends BaseActivity {
             return;
         }
         //获取输入的用户名与密码
-        String username = etUsername.getText().toString();
+        final String username = etUsername.getText().toString();
         String password = etPassword.getText().toString();
 
         //创建请求参数对象
@@ -63,11 +70,19 @@ public class LoginActivity extends BaseActivity {
                 JsonObject jsonObject = (JsonObject) jsonParser.parse(result);
                 int ret = jsonObject.get("ret").getAsInt();
                 if(ret == 0){
-                    SharedPreferences sharedPreferences = LoginActivity.this.getSharedPreferences("config", LoginActivity.this.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("ak", jsonObject.get("data").getAsJsonObject().get("ak").getAsString());
-                    editor.commit();
-                    Toasty.toasty(LoginActivity.this,jsonObject.get("data").getAsJsonObject().get("ak").getAsString());
+
+                    Gson gson = new Gson();
+                    User user = gson.fromJson(jsonObject.get("data").getAsJsonObject(),User.class);
+//                    SharePreferenceManager.writeString(LoginActivity.this,"restaurant_username", user.getUsername());
+//                    SharePreferenceManager.writeString(LoginActivity.this,"restaurant_ak", user.getAk());
+//                    SharePreferenceManager.writeString(LoginActivity.this,"restaurant_phone", user.getPhone());
+                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                    intent.putExtra("ak",user.getAk());
+                    intent.putExtra("username",user.getUsername());
+                    intent.putExtra("phone",user.getPhone());
+                    intent.putExtra("isLogin",true);
+                    startActivity(intent);
+                    finish();
                 } else {
                     Toasty.toasty(LoginActivity.this,"用户名或密码错误");
                 }
@@ -90,9 +105,12 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
+    @ViewInject(R.id.btn_sign_in)
+    private Button btnSignIn;
+
     @Event(value = R.id.btn_sign_in,
             type = View.OnClickListener.class)
-    private void onSignInClick(View view){
+    private void onsignInClick(View view){
         Intent intent = new Intent(LoginActivity.this,SignInActivity.class);
         startActivity(intent);
     }

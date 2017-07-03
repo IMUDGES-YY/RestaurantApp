@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.imudges.yy.restaurantapp.Bean.User;
 import com.imudges.yy.restaurantapp.R;
 import com.imudges.yy.restaurantapp.Tool.Config;
 import com.imudges.yy.restaurantapp.Tool.SharePreferenceManager;
@@ -35,6 +36,7 @@ import org.xutils.x;
 public class UserFragment extends BaseFragment{
 
     private String ak = null;
+    private User user = null;
 
     @ViewInject(R.id.tv_user_name)
     private TextView tvUsername;
@@ -57,10 +59,17 @@ public class UserFragment extends BaseFragment{
     }
 
     private boolean checkLoginStatus(){
-        ak = SharePreferenceManager.readString(getContext(),"restaurant_ak");
+        Intent intent = getActivity().getIntent();
+        ak = intent.getStringExtra("ak");
         if(ak == null || ak.equals("")){
             return false;
         } else {
+            String username = intent.getStringExtra("username");
+            String phone = intent.getStringExtra("phone");
+            user = new User();
+            user.setAk(ak);
+            user.setPhone(phone);
+            user.setUsername(username);
             return true;
         }
     }
