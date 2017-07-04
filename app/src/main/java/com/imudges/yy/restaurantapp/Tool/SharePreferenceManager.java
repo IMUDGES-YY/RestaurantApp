@@ -31,4 +31,11 @@ public class SharePreferenceManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences("config", Context.MODE_PRIVATE);
         return sharedPreferences.getString(key,null);
     }
+
+    public static void clean(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("config",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.commit();
+    }
 }

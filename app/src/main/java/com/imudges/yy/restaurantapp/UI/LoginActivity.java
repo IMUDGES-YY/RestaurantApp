@@ -73,13 +73,11 @@ public class LoginActivity extends BaseActivity {
 
                     Gson gson = new Gson();
                     User user = gson.fromJson(jsonObject.get("data").getAsJsonObject(),User.class);
-//                    SharePreferenceManager.writeString(LoginActivity.this,"restaurant_username", user.getUsername());
-//                    SharePreferenceManager.writeString(LoginActivity.this,"restaurant_ak", user.getAk());
-//                    SharePreferenceManager.writeString(LoginActivity.this,"restaurant_phone", user.getPhone());
+                    User.mUser = user;
+                    SharePreferenceManager.writeString(LoginActivity.this,"restaurant_username", user.getUsername());
+                    SharePreferenceManager.writeString(LoginActivity.this,"restaurant_ak", user.getAk());
+                    SharePreferenceManager.writeString(LoginActivity.this,"restaurant_phone", user.getPhone());
                     Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                    intent.putExtra("ak",user.getAk());
-                    intent.putExtra("username",user.getUsername());
-                    intent.putExtra("phone",user.getPhone());
                     intent.putExtra("isLogin",true);
                     startActivity(intent);
                     finish();

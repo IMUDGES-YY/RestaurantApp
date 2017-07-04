@@ -35,9 +35,6 @@ import org.xutils.x;
 @ContentView(R.layout.fragment_user)
 public class UserFragment extends BaseFragment{
 
-    private String ak = null;
-    private User user = null;
-
     @ViewInject(R.id.tv_user_name)
     private TextView tvUsername;
 
@@ -59,17 +56,9 @@ public class UserFragment extends BaseFragment{
     }
 
     private boolean checkLoginStatus(){
-        Intent intent = getActivity().getIntent();
-        ak = intent.getStringExtra("ak");
-        if(ak == null || ak.equals("")){
+        if(User.mUser == null){
             return false;
         } else {
-            String username = intent.getStringExtra("username");
-            String phone = intent.getStringExtra("phone");
-            user = new User();
-            user.setAk(ak);
-            user.setPhone(phone);
-            user.setUsername(username);
             return true;
         }
     }
@@ -87,8 +76,8 @@ public class UserFragment extends BaseFragment{
         if(!checkLoginStatus()){
             tvUsername.setText("登陆/注册");
         } else {
-            String username = SharePreferenceManager.readString(getContext(),"restaurant_username");
-            tvUsername.setText(username);
+//            String username = SharePreferenceManager.readString(getContext(),"restaurant_username");
+            tvUsername.setText(User.mUser.getUsername());
         }
     }
 }

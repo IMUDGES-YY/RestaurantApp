@@ -43,4 +43,6 @@ public class User {
     public void setAk(String ak) {
         this.ak = ak;
     }
+
+    public static User mUser = null;
 }

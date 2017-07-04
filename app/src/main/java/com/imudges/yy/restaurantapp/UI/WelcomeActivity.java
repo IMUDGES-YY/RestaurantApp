@@ -55,7 +55,6 @@ public class WelcomeActivity extends BaseActivity {
     private CommonProgressDialog pBar;
     private boolean stopJumpFlag = false;
     private boolean isLoginFlag = false;
-    private User mUser = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,11 +83,10 @@ public class WelcomeActivity extends BaseActivity {
                     int ret = jsonObject1.get("ret").getAsInt();
                     if(ret == 0){
                         User user = gson.fromJson(jsonObject1.get("data").getAsJsonObject(),User.class);
-//                        SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_ak",user.getAk());
-//                        SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_username",user.getUsername());
-                        mUser = user;
+                        User.mUser = user;
                         isLoginFlag = true;
                     } else if(ret == -1){
+                        SharePreferenceManager.clean(WelcomeActivity.this);
                         isLoginFlag = false;
                     }
                 }
@@ -223,10 +221,10 @@ public class WelcomeActivity extends BaseActivity {
 
     private void goLogin(){
         Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
-        if(mUser != null){
-            intent.putExtra("ak",mUser.getAk());
-            intent.putExtra("username",mUser.getUsername());
-            intent.putExtra("phone",mUser.getPhone());
+        if(User.mUser != null){
+            SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_ak",User.mUser.getAk());
+            SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_username",User.mUser.getUsername());
+            SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_phone",User.mUser.getPhone());
             intent.putExtra("isLogin",true);
         } else {
             intent.putExtra("isLogin",false);
