@@ -29,6 +29,7 @@ import com.google.gson.JsonParser;
 import com.imudges.yy.restaurantapp.Bean.User;
 import com.imudges.yy.restaurantapp.R;
 import com.imudges.yy.restaurantapp.Tool.Config;
+import com.imudges.yy.restaurantapp.Tool.MyParamsBuilder;
 import com.imudges.yy.restaurantapp.Tool.SharePreferenceManager;
 import com.imudges.yy.restaurantapp.UI.view.CommonProgressDialog;
 import com.yanzhenjie.alertdialog.AlertDialog;
@@ -63,54 +64,47 @@ public class WelcomeActivity extends BaseActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         /**标题是属于View的，所以窗口所有的修饰部分被隐藏后标题依然有效,需要去掉标题**/
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        View rootView = LayoutInflater.from(this).inflate(R.layout.activity_welcome,null);
+        View rootView = LayoutInflater.from(this).inflate(R.layout.activity_welcome, null);
         setContentView(rootView);
 
+        RequestParams params = new MyParamsBuilder(WelcomeActivity.this,"check_login_status", true)
+                .builder();
 
-        String ak = SharePreferenceManager.readString(WelcomeActivity.this,"restaurant_ak");
-        //判断用户状态
-        final JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("ak",ak);
-            RequestParams requestParams = new RequestParams(Config.BASE_URL + "check_login_status");
-            requestParams.setAsJsonContent(true);
-            requestParams.setBodyContent(jsonObject.toString());
-            x.http().post(requestParams, new org.xutils.common.Callback.CommonCallback<String>() {
-                @Override
-                public void onSuccess(String result) {
-                    JsonObject jsonObject1 = new JsonParser().parse(result).getAsJsonObject();
-                    Gson gson = new Gson();
-                    int ret = jsonObject1.get("ret").getAsInt();
-                    if(ret == 0){
-                        User user = gson.fromJson(jsonObject1.get("data").getAsJsonObject(),User.class);
-                        User.mUser = user;
-                        isLoginFlag = true;
-                    } else if(ret == -1){
-                        SharePreferenceManager.clean(WelcomeActivity.this);
-                        isLoginFlag = false;
-                    }
+        x.http().get(params, new org.xutils.common.Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                JsonObject jsonObject1 = new JsonParser().parse(result).getAsJsonObject();
+                Gson gson = new Gson();
+                int ret = jsonObject1.get("ret").getAsInt();
+                if (ret == 0) {
+                    User user = gson.fromJson(jsonObject1.get("data").getAsJsonObject(), User.class);
+                    User.mUser = user;
+                    isLoginFlag = true;
+                } else if (ret == -1) {
+                    SharePreferenceManager.clean(WelcomeActivity.this);
+                    User.mUser = null;
+                    isLoginFlag = false;
                 }
+            }
 
-                @Override
-                public void onError(Throwable ex, boolean isOnCallback) {
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
 
-                }
+            }
 
-                @Override
-                public void onCancelled(CancelledException cex) {
+            @Override
+            public void onCancelled(CancelledException cex) {
 
-                }
+            }
 
-                @Override
-                public void onFinished() {
+            @Override
+            public void onFinished() {
 
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            }
+        });
 
-        Animation animation = AnimationUtils.loadAnimation(this,R.anim.alpha);
+
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.alpha);
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -122,20 +116,20 @@ public class WelcomeActivity extends BaseActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (!stopJumpFlag){
-                            if(isLoginFlag ){
+                        if (!stopJumpFlag) {
+                            if (isLoginFlag) {
                                 //TODO question
                                 goLogin();
                             } else {
                                 goLogin();
                             }
-                        }else {
+                        } else {
                             String note = "";
                             int forced = 0;
-                            try{
+                            try {
                                 note = version.note.split("&&")[0];
                                 forced = Integer.parseInt(version.note.split("&&")[1]);
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 note = version.note;
                             }
                             WelcomeActivity.this.showDialog(version.code, version.name, note, version.URL.toString(), forced);
@@ -158,7 +152,7 @@ public class WelcomeActivity extends BaseActivity {
             public void onVersion(Version version) {
                 stopJumpFlag = true;
                 WelcomeActivity.this.version = version;
-                Log.d("AnyVersion","New Version: \n" + version);
+                Log.d("AnyVersion", "New Version: \n" + version);
             }
         });
         version.check(NotifyStyle.Callback);
@@ -201,9 +195,9 @@ public class WelcomeActivity extends BaseActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        if (forced == 1){
+                        if (forced == 1) {
                             finish();
-                        }else {
+                        } else {
                             goLogin();
                         }
                     }
@@ -219,20 +213,19 @@ public class WelcomeActivity extends BaseActivity {
         }
     };
 
-    private void goLogin(){
+    private void goLogin() {
         Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
-        if(User.mUser != null){
-            SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_ak",User.mUser.getAk());
-            SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_username",User.mUser.getUsername());
-            SharePreferenceManager.writeString(WelcomeActivity.this,"restaurant_phone",User.mUser.getPhone());
-            intent.putExtra("isLogin",true);
+        if (User.mUser != null) {
+            SharePreferenceManager.writeString(WelcomeActivity.this, "ak", User.mUser.getAk());
+            SharePreferenceManager.writeString(WelcomeActivity.this, "username", User.mUser.getUsername());
+            SharePreferenceManager.writeString(WelcomeActivity.this, "phone", User.mUser.getPhone());
+            intent.putExtra("isLogin", true);
         } else {
-            intent.putExtra("isLogin",false);
+            intent.putExtra("isLogin", false);
         }
         startActivity(intent);
         finish();
     }
-
 
 
     class DownloadTask extends AsyncTask<String, Integer, String> {

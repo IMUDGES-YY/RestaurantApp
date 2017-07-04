@@ -44,6 +44,7 @@ public class UserFragment extends BaseFragment{
     @Event(value = R.id.linear_layout_login,type = View.OnClickListener.class)
     private void onclickLogin(View view){
         if(checkLoginStatus()){
+
             //跳转至个人信息界面
             Toasty.toasty(getContext(),"用户已登录");
         } else {
@@ -76,7 +77,6 @@ public class UserFragment extends BaseFragment{
         if(!checkLoginStatus()){
             tvUsername.setText("登陆/注册");
         } else {
-//            String username = SharePreferenceManager.readString(getContext(),"restaurant_username");
             tvUsername.setText(User.mUser.getUsername());
         }
     }

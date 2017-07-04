@@ -60,11 +60,11 @@ public class MyParamsBuilder {
             }
         }
         if (isGet){
-            params.addQueryStringParameter("ts",ts + "");
+//            params.addQueryStringParameter("ts",ts + "");
             //params.addQueryStringParameter("sk",MD5.encryptTimeStamp(ts));
             params.addQueryStringParameter("ak",ak);
         }else {
-            params.addBodyParameter("ts",ts + "");
+//            params.addBodyParameter("ts",ts + "");
            // params.addBodyParameter("sk",MD5.encryptTimeStamp(ts));
             params.addBodyParameter("ak",ak);
         }
